@@ -1,0 +1,37 @@
+---
+
+-   name:   Server | Ensure group exists
+    group:  name={{ group }}    gid=2401
+
+-   name:   Server | Ensure deploy is in the group
+    user:   name=deploy groups={{ group }}
+
+# Following (Node.js) could be in its' own role
+- name: Node.js | Checking installed version of node.js
+  shell: /usr/bin/test "$(node -v 2> /dev/null)" = v{{node_version}}
+  register: wanted_version_installed
+  ignore_errors: True
+  changed_when: "wanted_version_installed.rc == 1"
+
+- name: Node.js | Fetching node.js source
+  action: get_url url=http://nodejs.org/dist/v{{node_version}}/{{node_tarball}} dest=/tmp/
+  when: wanted_version_installed.rc == 1
+
+- name: Node.js | Unpack node.js tarball
+  command: tar zxf {{node_tarball}} chdir=/tmp
+  when: wanted_version_installed.rc == 1
+
+- name: Node.js | Compile and install Version - {{node_version}}
+  shell: ./configure --prefix={{node_path}} && make && make install chdir=/tmp/{{node_prefix}}
+  sudo: true
+  when: wanted_version_installed.rc == 1
+
+# Following (PM2) could be in its' own role
+-   name: PM2 | Install pm2 package
+    npm: name=pm2 state=present global=yes
+
+-   name: PM2 | Installing startup script
+    shell: pm2 startup ubuntu >& /dev/null chdir=~/ executable=/bin/bash
+
+-   name: Git | Ensure Git is installed
+    apt: pkg=git-core

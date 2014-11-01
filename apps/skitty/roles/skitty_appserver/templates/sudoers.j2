@@ -1,0 +1,22 @@
+# {{ ansible_managed }}
+
+Defaults      !lecture,tty_tickets,!fqdn
+
+# User privilege specification
+root          ALL=(ALL) ALL
+
+vagrant   ALL=(ALL) NOPASSWD:ALL
+
+# Members of the admin group may gain root privileges
+%admin     ALL=(ALL) NOPASSWD:ALL
+
+# Allow members of group sudo to execute any command
+
+# See sudoers(5) for more information on "#include" directives:
+
+#includedir /etc/sudoers.d
+
+{% for user in sudoers.passwordless %}
+%{{ user }} ALL=(ALL) NOPASSWD:ALL
+{% endfor %}
+

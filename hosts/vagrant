@@ -1,0 +1,7 @@
+[skitty]
+192.168.100.70
+
+[all:vars]
+env=dev
+vagrant=True
+ansible_ssh_args='-o ForwardAgent=yes'

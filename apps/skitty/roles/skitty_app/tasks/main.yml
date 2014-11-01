@@ -1,0 +1,35 @@
+---
+
+-   name: Server | Ensure instance root directory exists
+    file: path={{ instance.root_dir }} state=directory mode=02755 group=deploy
+
+-   name: Server | Ensure important instance directories exist
+    file: path={{ instance.root_dir }}/{{ item }} state=directory mode=02755 group=deploy owner=deploy
+    with_items:
+        - "{{instance.name}}_v2"
+        - "{{instance.name}}_v2.git"
+
+-   name: PM2 | Deleting all apps
+    command: pm2 -s delete all
+    ignore_errors: yes
+
+-   name: PM2 | Check list of Node.js apps running
+    command: "pm2 list"
+    register: pm2_list
+    changed_when: false
+
+# Need to install pm2-web + start (install for pm2-web will be in the skitty_appserver role)
+#-   name: PM2 | Start web + server
+#    command: pm2 start {{item}}
+#    with_items:
+#        - web
+#        - server
+#    when: "pm2_list.stdout.find('{{item}}') == -1"
+
+-   name: Server | Check existence of app file
+    stat: path="{{instance.root_dir}}{{instance.name}}_v2/server.js"
+    register: app_file
+
+-   name: PM2 | Start Skitty app
+    command: "chdir={{instance.root_dir}}/skitty_v2/ pm2 start server.js --name {{instance.name}}"
+    when: "pm2_list.stdout.find('skitty') == -1 and app_file.stat.exists == True"

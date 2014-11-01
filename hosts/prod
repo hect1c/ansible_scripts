@@ -1,0 +1,6 @@
+[skitty]
+192.210.204.121
+
+[all:vars]
+env=prod
+vagrant=False

@@ -1,0 +1,8 @@
+---
+
+instance:
+    name: skitty
+    config: prod
+    repo_url: "git@github.com:hect1c/skitty_v2.git"
+    branch: develop
+    root_dir: /home/deploy/

@@ -1,0 +1,39 @@
+---
+
+- name: Git | Get GitHub key
+  command: ssh-keyscan github.com
+  register: github_key
+  changed_when: False
+
+- name: Git | Ensure GitHub key is in known_hosts
+  lineinfile: dest=~/.ssh/known_hosts regexp="^github" line="{{ github_key.stdout }}" create=yes
+
+- name: Git | Ensure git repository is ready
+  action: command {{ item }} chdir="{{ instance.root_dir }}{{instance.name}}_v2.git"
+  with_items:
+    - git init
+    - git config core.bare
+    - git config core.filemode false
+    - git config core.worktree "{{ instance.root_dir }}{{instance.name}}_v2"
+    - git config receive.denycurrentbranch ignore
+
+- name: Git | Check what remotes the repo has
+  command: git remote chdir={{ instance.root_dir }}/{{instance.name}}_v2.git
+  register: git_remote_list
+
+- name: Git | If origin remote exists, update the URL
+  command: git remote set-url origin {{ instance.repo_url }} chdir={{ instance.root_dir }}{{instance.name}}_v2.git
+  when: "'origin' in git_remote_list.stdout"
+
+- name: Git | If origin remote does not exist, create it
+  command: git remote add origin {{ instance.repo_url }} chdir={{ instance.root_dir }}{{instance.name}}_v2.git
+  when: "'origin' not in git_remote_list.stdout"
+
+- name: Git | Update branches tracked by the remote
+  command: git remote set-branches origin {{ instance.branch }} chdir={{ instance.root_dir }}{{instance.name}}_v2.git
+
+- name: Git | Fetch latest changes from remote
+  shell: git fetch chdir={{ instance.root_dir}}/{{instance.name}}_v2.git
+
+- name: Git | Reset work tree to latest commit from branch {{ instance.branch }}
+  shell: git reset --hard origin/{{ instance.branch}} chdir={{ instance.root_dir }}{{instance.name}}_v2.git

@@ -18,18 +18,10 @@
     register: pm2_list
     changed_when: false
 
-# Need to install pm2-web + start (install for pm2-web will be in the skitty_appserver role)
-#-   name: PM2 | Start web + server
-#    command: pm2 start {{item}}
-#    with_items:
-#        - web
-#        - server
-#    when: "pm2_list.stdout.find('{{item}}') == -1"
-
 -   name: Server | Check existence of app file
-    stat: path="{{instance.root_dir}}{{instance.name}}_v2/server.js"
+    stat: path={{instance.root_dir}}{{instance.name}}_v2/server.js
     register: app_file
 
 -   name: PM2 | Start Skitty app
-    command: "chdir={{instance.root_dir}}/skitty_v2/ pm2 start server.js --name {{instance.name}}"
+    command: "chdir={{ instance.root_dir }}/skitty_v2/ pm2 start server.js --name {{ instance.name }}"
     when: "pm2_list.stdout.find('skitty') == -1 and app_file.stat.exists == True"

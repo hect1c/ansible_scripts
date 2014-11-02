@@ -30,10 +30,10 @@
   when: "'origin' not in git_remote_list.stdout"
 
 - name: Git | Update branches tracked by the remote
-  command: git remote set-branches origin {{ instance.branch }} chdir={{ instance.root_dir }}{{instance.name}}_v2.git
+  command: git remote set-branches origin {{instance.branch}} chdir={{ instance.root_dir }}{{instance.name}}_v2.git
 
 - name: Git | Fetch latest changes from remote
   shell: git fetch chdir={{ instance.root_dir}}/{{instance.name}}_v2.git
 
-- name: Git | Reset work tree to latest commit from branch {{ instance.branch }}
-  shell: git reset --hard origin/{{ instance.branch}} chdir={{ instance.root_dir }}{{instance.name}}_v2.git
+- name: Git | Reset work tree to latest commit from branch
+  shell: git reset --hard origin/{{instance.branch}} chdir={{ instance.root_dir }}{{instance.name}}_v2.git

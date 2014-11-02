@@ -1,0 +1,6 @@
+---
+
+plugdj:
+    room_name: "room-name"
+    auth_email: "account-email"
+    auth_pw: "account-password"

@@ -6,5 +6,6 @@
     sudo_user: root
     vars_files:
         - instance_vars/{{env}}.yml
+        - plugdj_vars/main.yml
     roles:
         - { role: deploy }

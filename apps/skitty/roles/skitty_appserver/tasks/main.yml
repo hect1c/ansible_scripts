@@ -27,8 +27,8 @@
   when: wanted_version_installed.rc == 1
 
 # Following (PM2) could be in its' own role
--   name: PM2 | Install pm2 package
-    npm: name=pm2 state=present global=yes
+-   name: PM2 | Install PM2
+    command: npm install -g pm2 --unsafe-perm
 
 -   name: PM2 | Installing startup script
     shell: pm2 startup ubuntu >& /dev/null chdir=~/ executable=/bin/bash

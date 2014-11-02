@@ -61,6 +61,7 @@ Typically, apps in my ansible_scripts have the following playbooks:
 To run a playbook, use a command like:
 
 ```ansible-playbook app/dotcom/configure.yml -i hosts/env```
+
 ```ansible-playbook app/dotcom/deploy.yml -i hosts/env```
 
 where the first parameter is the path to the playbook, and the second (-i)

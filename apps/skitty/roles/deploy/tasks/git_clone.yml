@@ -10,6 +10,8 @@
 
 - name: Git | Ensure git repository is ready
   action: command {{ item }} chdir="{{ instance.root_dir }}{{instance.name}}_v2.git"
+  sudo: True
+  sudo_user: root
   with_items:
     - git init
     - git config core.bare
@@ -19,21 +21,33 @@
 
 - name: Git | Check what remotes the repo has
   command: git remote chdir={{ instance.root_dir }}/{{instance.name}}_v2.git
+  sudo:   True
+  sudo_user:  root
   register: git_remote_list
 
 - name: Git | If origin remote exists, update the URL
   command: git remote set-url origin {{ instance.repo_url }} chdir={{ instance.root_dir }}{{instance.name}}_v2.git
+  sudo:   True
+  sudo_user:  root
   when: "'origin' in git_remote_list.stdout"
 
 - name: Git | If origin remote does not exist, create it
   command: git remote add origin {{ instance.repo_url }} chdir={{ instance.root_dir }}{{instance.name}}_v2.git
+  sudo:   True
+  sudo_user:  root
   when: "'origin' not in git_remote_list.stdout"
 
 - name: Git | Update branches tracked by the remote
   command: git remote set-branches origin {{instance.branch}} chdir={{ instance.root_dir }}{{instance.name}}_v2.git
+  sudo: True
+  sudo_user: root
 
 - name: Git | Fetch latest changes from remote
   shell: git fetch chdir={{ instance.root_dir}}/{{instance.name}}_v2.git
+  sudo: True
+  sudo_user: root
 
 - name: Git | Reset work tree to latest commit from branch
   shell: git reset --hard origin/{{instance.branch}} chdir={{ instance.root_dir }}{{instance.name}}_v2.git
+  sudo: True
+  sudo_user: root

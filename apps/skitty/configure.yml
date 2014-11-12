@@ -9,4 +9,3 @@
         -   node_vars/main.yml
     roles:
         -   skitty_appserver
-        -   skitty_app

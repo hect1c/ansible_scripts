@@ -1,13 +1,10 @@
 ---
 
--   name: Server | Ensure instance root directory exists
-    file: path={{ instance.root_dir }} state=directory mode=02755 group=deploy
+# PM2 Tasks
 
--   name: Server | Ensure important instance directories exist
-    file: path={{ instance.root_dir }}/{{ item }} state=directory mode=02755 group=deploy owner=deploy
-    with_items:
-        - "{{instance.name}}_v2"
-        - "{{instance.name}}_v2.git"
+-   name: PM2 | Installing startup script
+    shell: pm2 startup ubuntu >& /dev/null chdir=~/ executable=/bin/bash
+    ignore_errors: yes
 
 -   name: PM2 | Deleting all apps
     command: pm2 -s delete all
@@ -25,3 +22,7 @@
 -   name: PM2 | Start Skitty app
     command: "chdir={{ instance.root_dir }}/skitty_v2/ pm2 start server.js --name {{ instance.name }}"
     when: "pm2_list.stdout.find('skitty') == -1 and app_file.stat.exists == True"
+
+# Restart app to resolve any process error
+-   name: PM2 | Restart Skitty app
+    command: "pm2 restart {{ instance.name }}"

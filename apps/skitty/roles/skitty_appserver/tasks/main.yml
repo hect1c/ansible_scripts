@@ -23,15 +23,23 @@
 
 - name: Node.js | Compile and install Version - {{node_version}}
   shell: ./configure --prefix={{node_path}} && make && make install chdir=/tmp/{{node_prefix}}
-  sudo: true
   when: wanted_version_installed.rc == 1
 
-# Following (PM2) could be in its' own role
--   name: PM2 | Install PM2
-    command: npm install -g pm2 --unsafe-perm
+-   name: Server | Ensure instance root directory exists
+    file: path={{ instance.root_dir }} state=directory mode=02755 group=deploy
+    sudo:   True
+    sudo_user:  root
 
--   name: PM2 | Installing startup script
-    shell: pm2 startup ubuntu >& /dev/null chdir=~/ executable=/bin/bash
+-   name: Server | Ensure important instance directories exist
+    file: path={{ instance.root_dir }}/{{ item }} state=directory mode=02755 group=deploy owner=deploy
+    with_items:
+        - "{{instance.name}}_v2"
+        - "{{instance.name}}_v2.git"
 
+#Install Git
 -   name: Git | Ensure Git is installed
     apt: pkg=git-core
+
+#Install PM2
+-   name: PM2 | Install PM2
+    command: npm install -g pm2 --unsafe-perm

@@ -2,8 +2,6 @@
 
 -   hosts: skitty
     remote_user: deploy
-    sudo: True
-    sudo_user: root
     vars_files:
         - instance_vars/{{env}}.yml
         - plugdj_vars/main.yml
